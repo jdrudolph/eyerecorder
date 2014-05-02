@@ -46,7 +46,7 @@
 		mouseDown: false,
 
 		init: function() {
-			this.registerEvents(['mousemove', 'click'])
+			this.registerEvents(['click','keyup'])
 		},
 
 		//trace events
@@ -117,7 +117,7 @@
 		play: function() {
 			this.state = "playing";
 			this.hideMouse();
-			this.timer = setInterval("Raijin.story.playFrame()", this.frameRate);
+			this.timer = setInterval(function(){Raijin.story.playFrame()}, this.frameRate);
 		},
 
 		//loop that runs each frame of playback
@@ -213,3 +213,43 @@
 	root.Raijin = Raijin;
 	root.Raijin.init();
 })(window);
+
+$("body").prepend("<div style='height:100px;'><div id='record'>Record</div> <div id='stop'>Stop</div> <div id='play'>Play</div></div>");
+
+(function($) {
+    $('.control').hide();
+    $('#record').show();
+
+    $('#output').click(function() {
+        Raijin.output.raw();
+    });
+
+    $('#record').click(function() {
+        Raijin.story.record();
+        $('.control').hide();
+        $('#stop').show();
+    });
+
+    $('#clear').click(function() {
+        Raijin.story.clear();
+        $('.control').hide();
+        $('#record').show();
+    });
+
+    $('#play').click(function() {
+        Raijin.story.play();
+    });
+
+    $('#stop').click(function() {
+        Raijin.story.stop();
+        $('.control').hide();
+        $('#play').show();
+        $('#stop').show();
+        $('#clear').show();
+    });
+
+    $(".testButton").click(function() {
+        $('#console').append('you clicked a button <br/>');
+    })
+
+})(jQuery);
