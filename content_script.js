@@ -214,7 +214,8 @@
 	root.Raijin.init();
 })(window);
 
-$("body").prepend("<div style='height:100px;'><div id='record'>Record</div> <div id='stop'>Stop</div> <div id='play'>Play</div></div>");
+$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
+$('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span class="fa-stop"></span><span class="fa-play-circle"></span></div>');
 
 (function($) {
     $('.control').hide();
@@ -224,23 +225,19 @@ $("body").prepend("<div style='height:100px;'><div id='record'>Record</div> <div
         Raijin.output.raw();
     });
 
-    $('#record').click(function() {
-        Raijin.story.record();
-        $('.control').hide();
-        $('#stop').show();
-    });
-
     $('#clear').click(function() {
         Raijin.story.clear();
         $('.control').hide();
         $('#record').show();
     });
 
-    $('#play').click(function() {
-        Raijin.story.play();
+    $('#eyerecorder :nth-child(1)').click(function() {
+        Raijin.story.record();
+        $('.control').hide();
+        $('#stop').show();
     });
 
-    $('#stop').click(function() {
+    $('#eyerecorder :nth-child(2)').click(function() {
         Raijin.story.stop();
         $('.control').hide();
         $('#play').show();
@@ -248,8 +245,21 @@ $("body").prepend("<div style='height:100px;'><div id='record'>Record</div> <div
         $('#clear').show();
     });
 
-    $(".testButton").click(function() {
-        $('#console').append('you clicked a button <br/>');
-    })
+    var b = $('#eyerecorder :nth-child(3)')
+    b.click(function() {
+        chrome.runtime.sendMessage("give me the playbacks!", function(result) {
+            b.empty().append(
+                $('<ol>').append(
+                    $.map(result, function(x, i) {
+                        return $('<li>').text(x.title);
+                    })
+                )
+            );
+        });
+    });
+
+    $('#eyerecorder').on('click', 'li', function() {
+        Raijin.story.play(this);
+    });
 
 })(jQuery);

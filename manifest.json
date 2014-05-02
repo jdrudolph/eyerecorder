@@ -2,7 +2,9 @@
   "name": "my plugin",
   "version": "0",
   "description": "What do I do as an extension",
-  "background": {"page": "background.html"},
+  "background": {
+      "scripts" : ["background.js"]
+  },
   "manifest_version": 2,
   "browser_action": {
     "name": "Manipulate DOM",
