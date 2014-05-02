@@ -215,7 +215,7 @@
 })(window);
 
 $('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
-$('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span class="fa-stop"></span><span class="fa-play-circle"></span></div>');
+$('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span class="fa-stop"></span><span class="fa-play-circle"></span><span class="fa-book"></span></div>');
 
 (function($) {
     $('.control').hide();
@@ -245,10 +245,10 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
         $('#clear').show();
     });
 
-    var b = $('#eyerecorder :nth-child(3)')
-    b.click(function() {
-        chrome.runtime.sendMessage("give me the playbacks!", function(result) {
-            b.empty().append(
+    var play = $('#eyerecorder :nth-child(3)')
+    play.click(function() {
+        chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
+            play.empty().append(
                 $('<ol>').append(
                     $.map(result, function(x, i) {
                         return $('<li>').text(x.title);
@@ -258,8 +258,33 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
         });
     });
 
-    $('#eyerecorder').on('click', 'li', function() {
+    play.on('click', 'li', function() {
+        console.log("clicked playlist");
         Raijin.story.play(this);
+    });
+    
+    var bookmarks = $('#eyerecorder :nth-child(4)')
+    bookmarks.click(function() {
+        chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
+            bookmarks.empty().append(
+                $('<ol>').append(
+                    $.map(result, function(x, i) {
+                        return $('<li>').text(x.link);
+                    })
+                )
+            ).append($('<span>').addClass('fa-bookmark'));
+        });
+    });
+
+    bookmarks.on('click', 'li', function() {
+        console.log("clicked bookmark" + this.innerText);
+        window.location.replace(this.innerText);
+    });
+    bookmarks.on('click', 'span', function() {
+        console.log("add bookmark" + document.URL);
+        chrome.runtime.sendMessage({method: "store this", what : "bookmark", url:document.URL}, function(result) {
+
+        });
     });
 
 })(jQuery);
