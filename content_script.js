@@ -1,8 +1,7 @@
-//     Raijin.js 0.1
-//     (c) 2011 Scott Murphy @hellocreation
-//     Raijin may be freely distributed under the MIT license.
-(function(w,$) {
-
+// Raijin.js 0.1
+// (c) 2011 Scott Murphy @hellocreation
+// Raijin may be freely distributed under the MIT license.
+(function(w,$){
 	//Initial Setup
 	//set root variable to window object
 	var root = w;
@@ -72,7 +71,7 @@
 		//creates a storyEvent object in format to be passed to story object
 		setStoryEvent: function(type, event) {
 			console.log(type + " " + Raijin.mouseX);
-			
+
 			Raijin.mouseX = event.pageX;
 			Raijin.mouseY = event.pageY;
 			var storyEvent = {
@@ -89,7 +88,7 @@
 					break;
 				case "input":
 					storyEvent.description = "input ";
-//storyEvent.text = event.text
+					//storyEvent.text = event.text
 					break;
 			}
 			return storyEvent;
@@ -174,7 +173,6 @@
 				//$(target).dragend();
 				break;
 			}
-
 			//set previous coordinate for next run
 			this.prevMouseX = mouseX;
 			this.prevMouseY = mouseY;
@@ -188,7 +186,6 @@
 			this.currentFrame = 0; //reset frame to 0;
 			this.prevMouseX = null;
 			this.prevMouseY = null;
-
 			this.showMouse();
 		},
 
@@ -213,9 +210,7 @@
 
 	Raijin.output = {
 		//export as json
-		json: function() {
-
-		},
+		json: function() {},
 		//output raw object
 		raw: function() {
 			console.log(Raijin.storyScript);
@@ -228,23 +223,32 @@
 
 	$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
 	$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="fa fa-play-circle"></span><span class="fa fa-book"></span></div>');
-
 	$('.control').hide();
 	$('#record').show();
 
 	var record = $('#eyerecorder > :nth-child(1)')
 	var stop = $('#eyerecorder > :nth-child(2)')
-	var play = $('#eyerecorder > :nth-child(3)')
+	//??? var play = $('#eyerecorder > :nth-child(3)')
 	var play_table = $('#eyerecorder > :nth-child(3) > *')
-	var bookmarks = $('#eyerecorder > :nth-child(4)')
+	//??? var bookmarks = $('#eyerecorder > :nth-child(4)')
 	var bookmarks_table = $('#eyerecorder > :nth-child(4) > *')
+
+	$('#output').click(function() {
+		Raijin.output.raw();
+	});
+
+	$('#clear').click(function() {
+		Raijin.story.clear();
+		$('.control').hide();
+		$('#record').show();
+	});
 
 	record.click(function() {
 		console.log("recording started");
 		Raijin.story.record();
 	});
 
-	stop.click(function() {
+	$('#eyerecorder :nth-child(2)').click(function() {
 		Raijin.story.stop();
 		console.log("add story" + Raijin);
 		chrome.runtime.sendMessage({method: "store this", what : "story!", story:Raijin.storyScript}, function(result) {
@@ -252,6 +256,7 @@
 		});
 	});
 
+	var play = $('#eyerecorder :nth-child(3)')
 	play.click(function() {
 		bookmarks_table.hide();
 		chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
@@ -260,8 +265,8 @@
 					$.map(result, function(x, i) {
 						return $('<li>').text("story");
 					})
-					)
-				);
+				)
+			);
 		});
 	});
 
@@ -270,6 +275,7 @@
 		this.play;
 	});
 
+	var bookmarks = $('#eyerecorder :nth-child(4)')
 	bookmarks.click(function() {
 		console.log('bookmarks clicked');
 		chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
@@ -279,8 +285,8 @@
 					$.map(result, function(x, i) {
 						return $('<li>').text(x.link);
 					})
-					)
-				).append($('<span>').addClass('fa-bookmark'));
+				)
+			).append($('<span>').addClass('fa-bookmark'));
 		});
 	});
 
@@ -294,5 +300,4 @@
 			console.log("bookmark storage request returned");
 		});
 	});
-
 })(window,jQuery);
