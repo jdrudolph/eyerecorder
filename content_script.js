@@ -1,7 +1,7 @@
 //     Raijin.js 0.1
 //     (c) 2011 Scott Murphy @hellocreation
 //     Raijin may be freely distributed under the MIT license.
-(function(w) {
+(function(w,$) {
 
 	//Initial Setup
 	//set root variable to window object
@@ -48,7 +48,7 @@
 		mouseDown: false,
 
 		init: function() {
-			this.registerEvents(['click','keyup'])
+			this.registerEvents(['click', 'mousemove', 'input'])
 		},
 
 		//trace events
@@ -61,7 +61,6 @@
 					self.addStoryEvent(se);
 				});
 			}
-
 		},
 
 		//get mouse position @return string "mouseX, mouseY"
@@ -73,13 +72,25 @@
 		//creates a storyEvent object in format to be passed to story object
 		setStoryEvent: function(type, event) {
 			console.log(type + " " + Raijin.mouseX);
-
+			
 			Raijin.mouseX = event.pageX;
 			Raijin.mouseY = event.pageY;
 			var storyEvent = {
 				type: type,
 				mouseX: Raijin.mouseX,
 				mouseY: Raijin.mouseY
+			}
+
+			switch (type) {
+				case "mousemove":
+					break;
+				case "click":
+					storyEvent.description = "clicked ";
+					break;
+				case "input":
+					storyEvent.description = "input ";
+//storyEvent.text = event.text
+					break;
 			}
 			return storyEvent;
 		},
@@ -214,12 +225,10 @@
 	//expose Raijin object to window.
 	root.Raijin = Raijin;
 	root.Raijin.init();
-})(window);
 
-$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
-$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="fa fa-play-circle"></span><span class="fa fa-book"></span></div>');
+	$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
+	$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="fa fa-play-circle"></span><span class="fa fa-book"></span></div>');
 
-(function($) {
 	$('.control').hide();
 	$('#record').show();
 
@@ -231,13 +240,14 @@ $('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span
 	var bookmarks_table = $('#eyerecorder > :nth-child(4) > *')
 
 	record.click(function() {
+		console.log("recording started");
 		Raijin.story.record();
 	});
 
 	stop.click(function() {
 		Raijin.story.stop();
 		console.log("add story" + Raijin);
-		chrome.runtime.sendMessage({method: "store this", what : "story!", story:Raijin.story}, function(result) {
+		chrome.runtime.sendMessage({method: "store this", what : "story!", story:Raijin.storyScript}, function(result) {
 			console.log("story storage request returned");
 		});
 	});
@@ -248,7 +258,7 @@ $('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span
 			play.empty().append(
 				$('<ol>').append(
 					$.map(result, function(x, i) {
-						return $('<li>').text(x.title);
+						return $('<li>').text("story");
 					})
 					)
 				);
@@ -285,4 +295,4 @@ $('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span
 		});
 	});
 
-})(jQuery);
+})(window,jQuery);
