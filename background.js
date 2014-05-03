@@ -1,5 +1,5 @@
-var mockup_bookmarks = [{link:'http://www.google.com'},{link:'http://www.facebook.com'}]
-
+var mockup_bookmarks = [{link:'http://www.google.com'},{link:'http://www.facebook.com'}];
+var mockup_playbacks = [{title:'test'}];
 console.log(chrome.storage);
 
 chrome.storage.sync.set({bookmarks : mockup_bookmarks, playbacks : mockup_playbacks}, function() {console.log('init storage')});
