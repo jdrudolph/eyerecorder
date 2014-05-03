@@ -3,7 +3,7 @@ var mockup_bookmarks = [{link:'http://www.google.com'},{link:'http://www.faceboo
 
 console.log(chrome.storage);
 
-chrome.storage.sync.set({bookmarks : mockup_bookmarks}, function() {console.log('init bookmarks')});
+chrome.storage.sync.set({bookmarks : mockup_bookmarks, playbacks : mockup_playbacks}, function() {console.log('init storage')});
 
 chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
@@ -12,20 +12,33 @@ chrome.runtime.onMessage.addListener(
                 "from the extension");
             if (request.method == "give me") {
                 if (request.what == "the playbacks!")
-                    sendResponse(mockup_playbacks);
-                if (request.what == "the bookmarks!")
+                    chrome.storage.sync.get(function(result) {
+                        sendResponse(mockup_playbacks);
+                        console.log('sending playbacks' + result.playbacks);
+                    });
+                if (request.what == "the bookmarks!") {
                     chrome.storage.sync.get(function(result) {
                         sendResponse(result.bookmarks);
                         console.log('sending bookmarks' + result.bookmarks);
                     });
+                }
             }
             if (request.method == "store this") {
+                console.log("store:" + request.what);
                 if (request.what == "bookmark!") {
-                    localStorage.bookmarks.push(request.url)
+                    console.log("storing bookmark");
+                    chrome.storage.sync.get(function(result) {
+                        console.log("get old bookmarks");
+                        result.bookmarks.push({link:request.url});
+                        console.log(chrome.storage.sync.set);
+                        chrome.storage.sync.set({bookmarks : result.bookmarks},
+                            function() {console.log('bookmark' + request.url + 'added')});
+                    });
                 }
                 if (request.what == "playback!")
                     console.log(request.story)
             }
+            return true;
 
 });
 

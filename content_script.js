@@ -284,8 +284,8 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
     });
     bookmarks.on('click', 'span', function() {
         console.log("add bookmark" + document.URL);
-        chrome.runtime.sendMessage({method: "store this", what : "bookmark", url:document.URL}, function(result) {
-
+        chrome.runtime.sendMessage({method: "store this", what : "bookmark!", url:document.URL}, function(result) {
+            console.log("bookmark storage request returned");
         });
     });
 
