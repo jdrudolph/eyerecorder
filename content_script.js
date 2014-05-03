@@ -221,23 +221,18 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
     $('.control').hide();
     $('#record').show();
 
-    $('#output').click(function() {
-        Raijin.output.raw();
-    });
-
-    $('#clear').click(function() {
-        Raijin.story.clear();
-        $('.control').hide();
-        $('#record').show();
-    });
-
-    $('#eyerecorder :nth-child(1)').click(function() {
+    var record = $('#eyerecorder :nth-child(1)')
+    var stop = $('#eyerecorder :nth-child(2)')
+    var play = $('#eyerecorder :nth-child(3)')
+    var bookmarks = $('#eyerecorder :nth-child(4)')
+    
+    record.click(function() {
         Raijin.story.record();
         $('.control').hide();
         $('#stop').show();
     });
 
-    $('#eyerecorder :nth-child(2)').click(function() {
+    stop.click(function() {
         Raijin.story.stop();
         $('.control').hide();
         $('#play').show();
@@ -245,7 +240,6 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
         $('#clear').show();
     });
 
-    var play = $('#eyerecorder :nth-child(3)')
     play.click(function() {
         chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
             play.empty().append(
@@ -263,7 +257,6 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
         Raijin.story.play(this);
     });
     
-    var bookmarks = $('#eyerecorder :nth-child(4)')
     bookmarks.click(function() {
         console.log('bookmarks clicked');
         chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
