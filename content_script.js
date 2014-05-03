@@ -218,68 +218,68 @@ $('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs
 $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span class="fa-stop"></span><span class="fa-play-circle"></span><span class="fa-book"></span></div>');
 
 (function($) {
-    $('.control').hide();
-    $('#record').show();
+	$('.control').hide();
+	$('#record').show();
 
-    var record = $('#eyerecorder :nth-child(1)')
-    var stop = $('#eyerecorder :nth-child(2)')
-    var play = $('#eyerecorder :nth-child(3)')
-    var bookmarks = $('#eyerecorder :nth-child(4)')
-    
-    record.click(function() {
-        Raijin.story.record();
-        $('.control').hide();
-        $('#stop').show();
-    });
+	var record = $('#eyerecorder :nth-child(1)')
+	var stop = $('#eyerecorder :nth-child(2)')
+	var play = $('#eyerecorder :nth-child(3)')
+	var bookmarks = $('#eyerecorder :nth-child(4)')
 
-    stop.click(function() {
-        Raijin.story.stop();
-        $('.control').hide();
-        $('#play').show();
-        $('#stop').show();
-        $('#clear').show();
-    });
+	record.click(function() {
+		Raijin.story.record();
+		$('.control').hide();
+		$('#stop').show();
+	});
 
-    play.click(function() {
-        chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
-            play.empty().append(
-                $('<ol>').append(
-                    $.map(result, function(x, i) {
-                        return $('<li>').text(x.title);
-                    })
-                )
-            );
-        });
-    });
+	stop.click(function() {
+		Raijin.story.stop();
+		$('.control').hide();
+		$('#play').show();
+		$('#stop').show();
+		$('#clear').show();
+	});
 
-    play.on('click', 'li', function() {
-        console.log("clicked playlist");
-        Raijin.story.play(this);
-    });
-    
-    bookmarks.click(function() {
-        console.log('bookmarks clicked');
-        chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
-            console.log('bookmarks received' + result);
-            bookmarks.empty().append(
-                $('<ol>').append(
-                    $.map(result, function(x, i) {
-                        return $('<li>').text(x.link);
-                    })
-                )
-            ).append($('<span>').addClass('fa-bookmark'));
-        });
-    });
+	play.click(function() {
+		chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
+			play.empty().append(
+				$('<ol>').append(
+					$.map(result, function(x, i) {
+						return $('<li>').text(x.title);
+					})
+					)
+				);
+		});
+	});
 
-    bookmarks.on('click', 'li', function() {
-        console.log("clicked bookmark" + this.innerText);
-        window.location.replace(this.innerText);
-    });
-    bookmarks.on('click', 'span', function() {
-        console.log("add bookmark" + document.URL);
-        chrome.runtime.sendMessage({method: "store this", what : "bookmark!", url:document.URL}, function(result) {
-            console.log("bookmark storage request returned");
-        });
-    });
+	play.on('click', 'li', function() {
+		console.log("clicked playlist");
+		Raijin.story.play(this);
+	});
+
+	bookmarks.click(function() {
+		console.log('bookmarks clicked');
+		chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
+			console.log('bookmarks received' + result);
+			bookmarks.empty().append(
+				$('<ol>').append(
+					$.map(result, function(x, i) {
+						return $('<li>').text(x.link);
+					})
+					)
+				).append($('<span>').addClass('fa-bookmark'));
+		});
+	});
+
+	bookmarks.on('click', 'li', function() {
+		console.log("clicked bookmark" + this.innerText);
+		window.location.replace(this.innerText);
+	});
+	bookmarks.on('click', 'span', function() {
+		console.log("add bookmark" + document.URL);
+		chrome.runtime.sendMessage({method: "store this", what : "bookmark!", url:document.URL}, function(result) {
+			console.log("bookmark storage request returned");
+		});
+	});
 
 })(jQuery);
