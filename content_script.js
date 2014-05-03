@@ -1,7 +1,7 @@
 //     Raijin.js 0.1
 //     (c) 2011 Scott Murphy @hellocreation
 //     Raijin may be freely distributed under the MIT license.
-(function(w) {
+(function(w,$) {
 
 	//Initial Setup
 	//set root variable to window object
@@ -212,12 +212,9 @@
 	//expose Raijin object to window.
 	root.Raijin = Raijin;
 	root.Raijin.init();
-})(window);
 
-$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
-$('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span class="fa-stop"></span><span class="fa-play-circle"></span><span class="fa-book"></span></div>');
-
-(function($) {
+	$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
+	$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="fa fa-play-circle"></span><span class="fa fa-book"></span></div>');
     $('.control').hide();
     $('#record').show();
 
@@ -262,7 +259,7 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
         console.log("clicked playlist");
         Raijin.story.play(this);
     });
-    
+
     var bookmarks = $('#eyerecorder :nth-child(4)')
     bookmarks.click(function() {
         console.log('bookmarks clicked');
@@ -289,4 +286,4 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
         });
     });
 
-})(jQuery);
+})(window,jQuery);
