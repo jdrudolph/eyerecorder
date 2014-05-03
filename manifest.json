@@ -1,7 +1,7 @@
 {
-  "name": "my plugin",
-  "version": "0",
-  "description": "What do I do as an extension",
+  "name": "eyerecorder",
+  "version": "1.0.0",
+  "description": "records and saves the navigations and then easily repeats them",
   "background": {
       "scripts" : ["background.js"]
   },
