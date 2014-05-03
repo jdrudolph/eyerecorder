@@ -12,11 +12,5 @@
 }
 
 #eyerecorder > :nth-child(3) {
-	color : green;
-	position: relative;
-}
-
-#eyerecorder  ol {
-	position: absolute;
-	left: -200 px;
+	color : green
 }
