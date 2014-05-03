@@ -32,7 +32,9 @@
 
 			//add fake mouse to be used during playback.  fake mouse initially is hidden
 			Raijin.story.registerFakeMouse();
-		}
+		},
+
+		title: "title"
 	};
 
 	Raijin.recorder = {
@@ -215,7 +217,7 @@
 })(window);
 
 $('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
-$('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span class="fa-stop"></span><span class="fa-play-circle"></span><span class="fa-book"></span></div>');
+$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="fa fa-play-circle"></span><span class="fa fa-book"></span></div>');
 
 (function($) {
 	$('.control').hide();
@@ -230,16 +232,14 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
 
 	record.click(function() {
 		Raijin.story.record();
-		$('.control').hide();
-		$('#stop').show();
 	});
 
 	stop.click(function() {
 		Raijin.story.stop();
-		$('.control').hide();
-		$('#play').show();
-		$('#stop').show();
-		$('#clear').show();
+		console.log("add story" + Raijin);
+		chrome.runtime.sendMessage({method: "store this", what : "story!", story:Raijin.story}, function(result) {
+			console.log("story storage request returned");
+		});
 	});
 
 	play.click(function() {
@@ -256,8 +256,8 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
 	});
 
 	play.on('click', 'li', function() {
-		console.log("clicked playlist");
-		Raijin.story.play(this);
+		console.log("clicked playlist" + this);
+		this.play;
 	});
 
 	bookmarks.click(function() {
