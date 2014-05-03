@@ -221,10 +221,12 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
 	$('.control').hide();
 	$('#record').show();
 
-	var record = $('#eyerecorder :nth-child(1)')
-	var stop = $('#eyerecorder :nth-child(2)')
-	var play = $('#eyerecorder :nth-child(3)')
-	var bookmarks = $('#eyerecorder :nth-child(4)')
+	var record = $('#eyerecorder > :nth-child(1)')
+	var stop = $('#eyerecorder > :nth-child(2)')
+	var play = $('#eyerecorder > :nth-child(3)')
+	var play_table = $('#eyerecorder > :nth-child(3) > *')
+	var bookmarks = $('#eyerecorder > :nth-child(4)')
+	var bookmarks_table = $('#eyerecorder > :nth-child(4) > *')
 
 	record.click(function() {
 		Raijin.story.record();
@@ -241,6 +243,7 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
 	});
 
 	play.click(function() {
+		bookmarks_table.hide();
 		chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
 			play.empty().append(
 				$('<ol>').append(
