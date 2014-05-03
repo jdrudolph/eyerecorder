@@ -265,7 +265,9 @@ $('body').prepend('<div id="eyerecorder"><span class="fa-circle"></span><span cl
     
     var bookmarks = $('#eyerecorder :nth-child(4)')
     bookmarks.click(function() {
+        console.log('bookmarks clicked');
         chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
+            console.log('bookmarks received' + result);
             bookmarks.empty().append(
                 $('<ol>').append(
                     $.map(result, function(x, i) {
