@@ -31,7 +31,9 @@
 
 			//add fake mouse to be used during playback.  fake mouse initially is hidden
 			Raijin.story.registerFakeMouse();
-		}
+		},
+
+		title: "title"
 	};
 
 	Raijin.recorder = {
@@ -45,7 +47,7 @@
 		mouseDown: false,
 
 		init: function() {
-			this.registerEvents(['click','keyup'])
+			this.registerEvents(['click', 'mousemove', 'input'])
 		},
 
 		//trace events
@@ -58,7 +60,6 @@
 					self.addStoryEvent(se);
 				});
 			}
-
 		},
 
 		//get mouse position @return string "mouseX, mouseY"
@@ -77,6 +78,18 @@
 				type: type,
 				mouseX: Raijin.mouseX,
 				mouseY: Raijin.mouseY
+			}
+
+			switch (type) {
+				case "mousemove":
+					break;
+				case "click":
+					storyEvent.description = "clicked ";
+					break;
+				case "input":
+					storyEvent.description = "input ";
+					//storyEvent.text = event.text
+					break;
 			}
 			return storyEvent;
 		},
@@ -160,7 +173,6 @@
 				//$(target).dragend();
 				break;
 			}
-
 			//set previous coordinate for next run
 			this.prevMouseX = mouseX;
 			this.prevMouseY = mouseY;
@@ -174,7 +186,6 @@
 			this.currentFrame = 0; //reset frame to 0;
 			this.prevMouseX = null;
 			this.prevMouseY = null;
-
 			this.showMouse();
 		},
 
@@ -199,9 +210,7 @@
 
 	Raijin.output = {
 		//export as json
-		json: function() {
-
-		},
+		json: function() {},
 		//output raw object
 		raw: function() {
 			console.log(Raijin.storyScript);
@@ -217,6 +226,13 @@
 	$('.control').hide();
 	$('#record').show();
 
+	var record = $('#eyerecorder > :nth-child(1)')
+	var stop = $('#eyerecorder > :nth-child(2)')
+	//??? var play = $('#eyerecorder > :nth-child(3)')
+	var play_table = $('#eyerecorder > :nth-child(3) > *')
+	//??? var bookmarks = $('#eyerecorder > :nth-child(4)')
+	var bookmarks_table = $('#eyerecorder > :nth-child(4) > *')
+
 	$('#output').click(function() {
 		Raijin.output.raw();
 	});
@@ -227,27 +243,27 @@
 		$('#record').show();
 	});
 
-	$('#eyerecorder :nth-child(1)').click(function() {
+	record.click(function() {
+		console.log("recording started");
 		Raijin.story.record();
-		$('.control').hide();
-		$('#stop').show();
 	});
 
 	$('#eyerecorder :nth-child(2)').click(function() {
 		Raijin.story.stop();
-		$('.control').hide();
-		$('#play').show();
-		$('#stop').show();
-		$('#clear').show();
+		console.log("add story" + Raijin);
+		chrome.runtime.sendMessage({method: "store this", what : "story!", story:Raijin.storyScript}, function(result) {
+			console.log("story storage request returned");
+		});
 	});
 
 	var play = $('#eyerecorder :nth-child(3)')
 	play.click(function() {
+		bookmarks_table.hide();
 		chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
 			play.empty().append(
 				$('<ol>').append(
 					$.map(result, function(x, i) {
-						return $('<li>').text(x.title);
+						return $('<li>').text("story");
 					})
 				)
 			);
@@ -255,8 +271,8 @@
 	});
 
 	play.on('click', 'li', function() {
-		console.log("clicked playlist");
-		Raijin.story.play(this);
+		console.log("clicked playlist" + this);
+		this.play;
 	});
 
 	var bookmarks = $('#eyerecorder :nth-child(4)')

@@ -1,8 +1,7 @@
-var mockup_bookmarks = [{link:'http://www.google.com'},{link:'http://www.facebook.com'}]
-
+var mockup_bookmarks = [{link:'http://www.google.com'},{link:'http://www.facebook.com'}];
 console.log(chrome.storage);
 
-chrome.storage.sync.set({bookmarks : mockup_bookmarks, playbacks : mockup_playbacks}, function() {console.log('init storage')});
+chrome.storage.sync.set({bookmarks : mockup_bookmarks, stories : []}, function() {console.log('init storage')});
 
 chrome.runtime.onMessage.addListener(
 		function(request, sender, sendResponse) {
@@ -12,8 +11,8 @@ chrome.runtime.onMessage.addListener(
 			if (request.method == "give me") {
 				if (request.what == "the playbacks!")
 					chrome.storage.sync.get(function(result) {
-					sendResponse(result.playbacks);
-					console.log('sending playbacks' + result.playbacks);
+					sendResponse(result.stories);
+					console.log('sending playbacks' + result.stories.toString());
 					});
 				if (request.what == "the bookmarks!") {
 					chrome.storage.sync.get(function(result) {
@@ -31,12 +30,12 @@ chrome.runtime.onMessage.addListener(
 							function() {console.log('bookmark' + request.url + 'added')});
 					});
 				}
-				if (request.what == "playback!")
-					console.log("storing playback");
+				if (request.what == "story!")
+					console.log("storing story");
 					chrome.storage.sync.get(function(result) {
-						result.bookmarks.push({title:request.title});
-						chrome.storage.sync.set({playbacks : result.playbacks},
-							function() {console.log('playback' + request.title + 'added')});
+						result.stories.push({story:request.story});
+						chrome.storage.sync.set({stories : result.stories},
+							function() {console.log('stories' + result.stories.toString() + 'added')});
 					});
 			}
 			return true;
