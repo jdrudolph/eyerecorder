@@ -1,4 +1,8 @@
-Chrome extension starting bundle
-================================
+EyeRecorder Chrome Extension
+===========================
 
-A basic starting point for all chrome extensions. Not all the files are needed for every extension, but the core basics are covered.
+This extension was developed for the [EyeWriter](http://eyewriter.org/) but not only :).
+
+The EyeWriter is a low-cost eye tracking system that uses inexpensive cameras and open-source computer vision software to track the wearer's eye movements.
+
+Our extension reduces the number of clicks needed while browsing, by recording and saving the navigation once and then easily choosing and repeating them.
