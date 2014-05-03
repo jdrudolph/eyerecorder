@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(
             if (request.method == "give me") {
                 if (request.what == "the playbacks!")
                     chrome.storage.sync.get(function(result) {
-                        sendResponse(mockup_playbacks);
+                        sendResponse(result.playbacks);
                         console.log('sending playbacks' + result.playbacks);
                     });
                 if (request.what == "the bookmarks!") {
@@ -24,19 +24,21 @@ chrome.runtime.onMessage.addListener(
                 }
             }
             if (request.method == "store this") {
-                console.log("store:" + request.what);
                 if (request.what == "bookmark!") {
                     console.log("storing bookmark");
                     chrome.storage.sync.get(function(result) {
-                        console.log("get old bookmarks");
                         result.bookmarks.push({link:request.url});
-                        console.log(chrome.storage.sync.set);
                         chrome.storage.sync.set({bookmarks : result.bookmarks},
                             function() {console.log('bookmark' + request.url + 'added')});
                     });
                 }
                 if (request.what == "playback!")
-                    console.log(request.story)
+                    console.log("storing playback");
+                    chrome.storage.sync.get(function(result) {
+                        result.bookmarks.push({title:request.title});
+                        chrome.storage.sync.set({playbacks : result.playbacks},
+                            function() {console.log('playback' + request.title + 'added')});
+                    });
             }
             return true;
 
