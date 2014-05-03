@@ -1,7 +1,7 @@
 {
-  "name": "eyerecorder",
+  "name": "EyeRecorder",
   "version": "1.0.0",
-  "description": "records and saves the navigations and then easily repeats them",
+  "description": "This free extension records and saves the navigations and then easily repeats them. It was designed for the EyeWriter, but can be used by all.",
   "background": {
       "scripts" : ["background.js"]
   },
