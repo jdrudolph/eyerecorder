@@ -1,50 +1,38 @@
-// Raijin.js 0.1
-// (c) 2011 Scott Murphy @hellocreation
-// Raijin may be freely distributed under the MIT license.
+/// EyeRecorder
+/// https://github.com/jdrudolph/EyeRecorder.git
+//??? Some code based on Raijin.js 0.1, but needs "fixing"...
+// Raijin by (c) 2011 Scott Murphy @hellocreation; distributed under the MIT license.
 (function(w,$){
 	//Initial Setup
 	//set root variable to window object
-	var root = w;
+	var root = w;//??? Huh? Whatever for? WTF? window is globals, not DOM root -- that's document (ie <html>).
+	//??? var Raijin = Raijin || {};//??? WTF?
 
-	//create Raijin object
-	var Raijin = Raijin || {};
+	// Require jQuery as a dependency //??? Inject it ourselves then, don't just complain!?
+	if (! jQuery) {throw new Error("Dependency Error.  Jquery is undefined.");}
 
-	// Require Jquery as a dependency
-	if (typeof jQuery === 'undefined') {
-		throw new Error("Dependency Error.  Jquery is undefined.");
-	}
-
-	Raijin = {
-
+	// Export namespace. //??? Are all/any of these really needed?! I don't think so.
+	root.Raijin = Raijin = {
 		//current version of Raijin
-		VERSION: 0.1,
-
-		//vars
-		mouseX: null,
+		VERSION: 0.1,//??? Duplicate of (and out of sync with!) manifest.json?
+		mouseX: null,//??? Why needed?
 		mouseY: null,
-
 		//main array to hold storyEvent
-		storyScript: new Array(),
+		storyScript: [], //???new Array(),//??? Better alloc it when starting recording?
+		title: "title",//??? Foo? Unused?
 
 		init: function() {
 			Raijin.recorder.init();
-
 			//add fake mouse to be used during playback.  fake mouse initially is hidden
 			Raijin.story.registerFakeMouse();
 		},
-
-		title: "title"
 	};
 
-	Raijin.recorder = {
+	Raijin.recorder = {//??? Why needed? Seems isn't.
 		//set root jquery object
-		w: $(root),
-
-		//bool to check for recording
-		recordAllowed: false,
-
-		//bool to check if mouseisDown
-		mouseDown: false,
+		w: $(root),//??? Seems wrong: "root" should be document, not window?! And why needed?
+		recordAllowed: false, //bool to check for recording
+		//??? mouseDown: false, //bool to check if mouseisDown
 
 		init: function() {
 			this.registerEvents(['click', 'mousemove', 'input'])
@@ -52,26 +40,25 @@
 
 		//trace events
 		registerEvents: function(events) {
-			var self = this;
+			var self = this;//??? Who is this this?
 			//loop through events and bind each type of event
 			for (var i = 0; i < events.length; i++) {
-				self.w.bind(events[i], function(e) {
+				self.w.bind(events[i], function(e) {//??? "bind"? WTF? Obsolete for ages. Use "on" and don't need loop.
 					var se = self.setStoryEvent(e.handleObj.type, e);
 					self.addStoryEvent(se);
 				});
 			}
 		},
 
-		//get mouse position @return string "mouseX, mouseY"
-		getMousePosition: function() {
-			var position = Raijin.mouseX + "," + Raijin.mouseY;
+		//get mouse position @return string "mouseX,mouseY"
+		getMousePosition: function() {//??? Why return "globals" instead of passing parameters?
+			var position = Raijin.mouseX + "," + Raijin.mouseY;//??? Why bother with local var?
 			return position;
 		},
 
 		//creates a storyEvent object in format to be passed to story object
 		setStoryEvent: function(type, event) {
 			console.log(type + " " + Raijin.mouseX);
-
 			Raijin.mouseX = event.pageX;
 			Raijin.mouseY = event.pageY;
 			var storyEvent = {
@@ -84,10 +71,11 @@
 				case "mousemove":
 					break;
 				case "click":
-					storyEvent.description = "clicked ";
+					storyEvent.description = "clicked ";//???... + clicked.what
 					break;
 				case "input":
 					storyEvent.description = "input ";
+					//???...
 					//storyEvent.text = event.text
 					break;
 			}
@@ -95,14 +83,14 @@
 		},
 
 		addStoryEvent: function(storyEvent) {
-			if (! (this.recordAllowed)) return;
-			Raijin.storyScript.push(storyEvent);
+			if (this.recordAllowed) Raijin.storyScript.push(storyEvent);
+			//??? BUG: avoid recording click on "stop".
 		}
 	}
 
 	Raijin.story = {
 		//story state
-		state: "initialized",
+		state: "initialized",//??? What for?
 		timer: null,
 		currentFrame: 0,
 		frameRate: 20,
@@ -134,7 +122,6 @@
 
 		//loop that runs each frame of playback
 		playFrame: function() {
-
 			//escape loop if we have completed the storyScript
 			if (this.currentFrame === Raijin.storyScript.length) {
 				this.stop();
@@ -205,8 +192,8 @@
 			var target = document.elementFromPoint(x, y);
 			$('#raijin-cursor').show();
 			return target;
-		}
-	}
+		},
+	};
 
 	Raijin.output = {
 		//export as json
@@ -214,40 +201,34 @@
 		//output raw object
 		raw: function() {
 			console.log(Raijin.storyScript);
-		}
-	}
+		},
+	};
 
-	//expose Raijin object to window.
-	root.Raijin = Raijin;
-	root.Raijin.init();
+	Raijin.init(); // Initialize: registers handlers for events to record, and creates "fake mouse".
 
+	// Inject dependencies (assets) we require: jQuery, FontAwesome.
 	$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
 	$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="fa fa-play-circle"></span><span class="fa fa-book"></span></div>');
-	$('.control').hide();
-	$('#record').show();
+	$('.control').hide();//??? Who?
+	$('#record').show();//??? Who?
 
-	var record = $('#eyerecorder > :nth-child(1)')
-	var stop = $('#eyerecorder > :nth-child(2)')
-	//??? var play = $('#eyerecorder > :nth-child(3)')
-	var play_table = $('#eyerecorder > :nth-child(3) > *')
-	//??? var bookmarks = $('#eyerecorder > :nth-child(4)')
-	var bookmarks_table = $('#eyerecorder > :nth-child(4) > *')
-
-	$('#output').click(function() {
+	$('#output').click(function() {//??? Unused.
 		Raijin.output.raw();
 	});
 
-	$('#clear').click(function() {
+	$('#clear').click(function() {//??? Unused.
 		Raijin.story.clear();
 		$('.control').hide();
 		$('#record').show();
 	});
 
+	var record = $('#eyerecorder>:nth-child(1)');//??? Yeah, using indices smells; use a class instead.
 	record.click(function() {
 		console.log("recording started");
 		Raijin.story.record();
 	});
 
+	var stop = $('#eyerecorder>:nth-child(2)');
 	$('#eyerecorder :nth-child(2)').click(function() {
 		Raijin.story.stop();
 		console.log("add story" + Raijin);
@@ -256,6 +237,7 @@
 		});
 	});
 
+	var play_table = $('#eyerecorder > :nth-child(3) > *');
 	var play = $('#eyerecorder :nth-child(3)')
 	play.click(function() {
 		bookmarks_table.hide();
@@ -269,13 +251,14 @@
 			);
 		});
 	});
-
+	//??? Explain...
 	play.on('click', 'li', function() {
-		console.log("clicked playlist" + this);
+		console.log("clicked playlist " + this);//??? Does "this" stringify nicely?
 		this.play;
 	});
 
-	var bookmarks = $('#eyerecorder :nth-child(4)')
+	var bookmarks_table = $('#eyerecorder > :nth-child(4) > *');//??? "*" smells like trouble.
+	var bookmarks = $('#eyerecorder>:nth-child(4)');
 	bookmarks.click(function() {
 		console.log('bookmarks clicked');
 		chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
@@ -289,10 +272,11 @@
 			).append($('<span>').addClass('fa-bookmark'));
 		});
 	});
-
+	//??? Explain...
 	bookmarks.on('click', 'li', function() {
-		console.log("clicked bookmark" + this.innerText);
-		window.location.replace(this.innerText);
+		var t=$(this).text();
+		console.log("clicked bookmark"+t);
+		window.location=t;
 	});
 	bookmarks.on('click', 'span', function() {
 		console.log("add bookmark" + document.URL);
@@ -300,4 +284,4 @@
 			console.log("bookmark storage request returned");
 		});
 	});
-})(window,jQuery);
+})(window,jQuery);//??? Not sure why we want to insulate window?
