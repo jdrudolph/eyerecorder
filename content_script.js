@@ -11,15 +11,15 @@
 	// Require jQuery as a dependency //??? Inject it ourselves then, don't just complain!?
 	if (! jQuery) {throw new Error("Dependency Error.  Jquery is undefined.");}
 
-	// Export namespace. //??? Are all these really needed?!
+	// Export namespace. //??? Are all/any of these really needed?! I don't think so.
 	root.Raijin = Raijin = {
 		//current version of Raijin
-		VERSION: 0.1,
+		VERSION: 0.1,//??? Duplicate of (and out of sync with!) manifest.json?
 		mouseX: null,//??? Why needed?
 		mouseY: null,
 		//main array to hold storyEvent
-		storyScript: new Array(),
-		title: "title",//??? Foo?
+		storyScript: [], //???new Array(),//??? Better alloc it when starting recording?
+		title: "title",//??? Foo? Unused?
 
 		init: function() {
 			Raijin.recorder.init();
@@ -28,11 +28,11 @@
 		},
 	};
 
-	Raijin.recorder = {//??? Why needed?
+	Raijin.recorder = {//??? Why needed? Seems isn't.
 		//set root jquery object
 		w: $(root),//??? Seems wrong: "root" should be document, not window?! And why needed?
 		recordAllowed: false, //bool to check for recording
-		mouseDown: false, //bool to check if mouseisDown
+		//??? mouseDown: false, //bool to check if mouseisDown
 
 		init: function() {
 			this.registerEvents(['click', 'mousemove', 'input'])
@@ -43,7 +43,7 @@
 			var self = this;//??? Who is this this?
 			//loop through events and bind each type of event
 			for (var i = 0; i < events.length; i++) {
-				self.w.bind(events[i], function(e) {
+				self.w.bind(events[i], function(e) {//??? "bind"? WTF? Obsolete for ages. Use "on" and don't need loop.
 					var se = self.setStoryEvent(e.handleObj.type, e);
 					self.addStoryEvent(se);
 				});
