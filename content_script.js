@@ -58,7 +58,6 @@
 
 		//creates a storyEvent object in format to be passed to story object
 		setStoryEvent: function(type, event) {
-			console.log(type + " " + Raijin.mouseX);
 			Raijin.mouseX = event.pageX;
 			Raijin.mouseY = event.pageY;
 			var storyEvent = {
@@ -208,80 +207,50 @@
 
 	// Inject dependencies (assets) we require: jQuery, FontAwesome.
 	$('head').prepend('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css">');
-	$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="fa fa-play-circle"></span><span class="fa fa-book"></span></div>');
-	$('.control').hide();//??? Who?
-	$('#record').show();//??? Who?
+	$('body').prepend('<div id="eyerecorder"><span class="fa fa-circle"></span><span class="fa fa-stop"></span><span class="menu fa fa-play-circle"><div class="dropdown"><ol class="stories"></ol><div class="fa fa-eraser clear"></div></div></span><span class="menu fa fa-book"><div class="dropdown"><ol class="bookmarks"></ol><div class="fa fa-plus addBookmark"></div><div class="fa fa-eraser clear"</div></div></div></span></div>');
 
-	$('#output').click(function() {//??? Unused.
-		Raijin.output.raw();
+	$('.dropdown').hide();
+
+	$('.menu').on('click', function() {
+		var dropdown = $(this).find('.dropdown')
+		dropdown.slideToggle('fast');
 	});
 
-	$('#clear').click(function() {//??? Unused.
-		Raijin.story.clear();
-		$('.control').hide();
-		$('#record').show();
-	});
-
-	var record = $('#eyerecorder>:nth-child(1)');//??? Yeah, using indices smells; use a class instead.
-	record.click(function() {
-		console.log("recording started");
-		Raijin.story.record();
-	});
-
-	var stop = $('#eyerecorder>:nth-child(2)');
-	$('#eyerecorder :nth-child(2)').click(function() {
-		Raijin.story.stop();
-		console.log("add story" + Raijin);
-		chrome.runtime.sendMessage({method: "store this", what : "story!", story:Raijin.storyScript}, function(result) {
-			console.log("story storage request returned");
+	$(".addBookmark").on('click', function() {
+		chrome.runtime.sendMessage({newbookmark:window.location.href}, function(response) {
+			console.log(response.success);
 		});
 	});
 
-	var play_table = $('#eyerecorder > :nth-child(3) > *');
-	var play = $('#eyerecorder :nth-child(3)')
-	play.click(function() {
-		bookmarks_table.hide();
-		chrome.runtime.sendMessage({method : "give me", what : "the playbacks!"}, function(result) {
-			play.empty().append(
-				$('<ol>').append(
-					$.map(result, function(x, i) {
-						return $('<li>').text("story");
-					})
-				)
+	// TODO : sendmessage to background, overthink use-case - remove one? all?
+	$(".clear").on('click', function() {
+		$(this).closest('.dropdown').find('ol').empty();
+	});
+
+	// initialize lists upon page-load
+	chrome.runtime.sendMessage("getlists", function(lists) {
+		$(".bookmarks").empty().append(
+			$.map(lists.bookmarks, function(b,i) {
+				return $('<li>').text(b);
+			})
+		);
+		$(".stories").empty().append(
+			$.map(lists.stories, function(b,i) {
+				return $('<li>').text(b);
+			})
+		);
+	});
+
+	chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
+		if (request.bookmarks) {
+			$(".bookmarks").empty().append(
+				$.map(request.bookmarks, function(b,i) {
+					return $('<li>').text(b);
+				})
 			);
-		});
+		}
+		// TODO handle newly added stories
+		return true;
 	});
-	//??? Explain...
-	play.on('click', 'li', function() {
-		console.log("clicked playlist " + this);//??? Does "this" stringify nicely?
-		this.play;
-	});
-
-	var bookmarks_table = $('#eyerecorder > :nth-child(4) > *');//??? "*" smells like trouble.
-	var bookmarks = $('#eyerecorder>:nth-child(4)');
-	bookmarks.click(function() {
-		console.log('bookmarks clicked');
-		chrome.runtime.sendMessage({method : "give me", what : "the bookmarks!"}, function(result) {
-			console.log('bookmarks received' + result);
-			bookmarks.empty().append(
-				$('<ol>').append(
-					$.map(result, function(x, i) {
-						return $('<li>').text(x.link);
-					})
-				)
-			).append($('<span>').addClass('fa-bookmark'));
-		});
-	});
-	//??? Explain...
-	bookmarks.on('click', 'li', function() {
-		var t=$(this).text();
-		console.log("clicked bookmark"+t);
-		window.location=t;
-	});
-	bookmarks.on('click', 'span', function() {
-		console.log("add bookmark" + document.URL);
-		chrome.runtime.sendMessage({method: "store this", what : "bookmark!", url:document.URL}, function(result) {
-			console.log("bookmark storage request returned");
-		});
-	});
+	
 })(window,jQuery);//??? Not sure why we want to insulate window?

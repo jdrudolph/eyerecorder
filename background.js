@@ -1,42 +1,32 @@
-var mockup_bookmarks = [{link:'http://www.google.com'},{link:'http://www.facebook.com'}];
-console.log(chrome.storage);
-
-chrome.storage.sync.set({bookmarks : mockup_bookmarks, stories : []}, function() {console.log('init storage')});
+chrome.storage.sync.set({bookmarks : [], stories : ['your ad could be here']}, function() {console.log('initalize storage')});
 
 chrome.runtime.onMessage.addListener(
 		function(request, sender, sendResponse) {
 			console.log(sender.tab ?
 				"from a content script:" + sender.tab.url :
 				"from the extension");
-			if (request.method == "give me") {
-				if (request.what == "the playbacks!")
-					chrome.storage.sync.get(function(result) {
-					sendResponse(result.stories);
-					console.log('sending playbacks' + result.stories.toString());
+			if (request.newbookmark) {
+				chrome.storage.sync.get('bookmarks', function(storage) {
+					var bks = storage.bookmarks;
+					bks.push(request.newbookmark);
+					chrome.storage.sync.set({bookmarks:bks}, function() {
+						console.log('bookmark added to', bks);
 					});
-				if (request.what == "the bookmarks!") {
-					chrome.storage.sync.get(function(result) {
-						sendResponse(result.bookmarks);
-						console.log('sending bookmarks' + result.bookmarks);
+					chrome.tabs.query({}, function(tabs) {
+						var message = {bookmarks:bks};
+						for (var i=0; i<tabs.length; i++) {
+							chrome.tabs.sendMessage(tabs[i].id,message);
+						}
 					});
-				}
+				});
+				sendResponse({success:true});
 			}
-			if (request.method == "store this") {
-				if (request.what == "bookmark!") {
-					console.log("storing bookmark");
-					chrome.storage.sync.get(function(result) {
-						result.bookmarks.push({link:request.url});
-						chrome.storage.sync.set({bookmarks : result.bookmarks},
-							function() {console.log('bookmark' + request.url + 'added')});
-					});
-				}
-				if (request.what == "story!")
-					console.log("storing story");
-					chrome.storage.sync.get(function(result) {
-						result.stories.push({story:request.story});
-						chrome.storage.sync.set({stories : result.stories},
-							function() {console.log('stories' + result.stories.toString() + 'added')});
-					});
+			// for initialization upon page load
+			else if (request == "getlists") {
+				chrome.storage.sync.get(function(storage) {
+					sendResponse({bookmarks:storage.bookmarks, stories:storage.stories});
+				});
 			}
+
 			return true;
 });
