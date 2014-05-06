@@ -1,25 +1,25 @@
 {
-  "name": "EyeRecorder",
-  "version": "1.0.0",
-  "description": "This free extension records and saves the navigations and then easily repeats them. It was designed for the EyeWriter, but can be used by all.",
-  "background": {
-      "scripts" : ["background.js"]
-  },
-  "manifest_version": 2,
-  "browser_action": {
-    "name": "Manipulate DOM",
-   "icons": { "16": "icon16.png",
-         	  "48": "icon48.png",
-        	  "128": "icon128.png" },
-    "default_icon": "icon16.png",
-    "default_popup" : "popup.html"
-  },
-  "content_scripts": [ {
-    "js": [ "jquery-2.0.2.min.js", "content_script.js" ],
-    "css": ["styling.css"],
-    "matches": [ "http://*/*", "https://*/*"]
-  }],
-	"permissions":[
-		"storage"
-	]
+	"name": "EyeRecorder",
+	"version": "1.0.0",
+	"description": "This free extension records and saves the navigations and then easily repeats them. It was designed for the EyeWriter, but can be used by all.",
+	"background": {
+		"scripts" : ["background.js"]
+	},
+	"manifest_version": 2,
+	"browser_action": {
+		"name": "Manipulate DOM",
+		"icons": {
+			"16": "icon16.png",
+			"48": "icon48.png",
+			"128": "icon128.png"
+	   	},
+		"default_icon": "icon16.png",
+		"default_popup" : "popup.html"
+	},
+	"content_scripts": [ {
+		"js": [ "jquery-2.0.2.min.js", "content_script.js" ],
+		"css": ["styling.css"],
+		"matches": [ "http://*/*", "https://*/*"]
+	}],
+	"permissions": ["storage"]
 }
