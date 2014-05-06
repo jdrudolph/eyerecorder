@@ -11,3 +11,8 @@
 #eyerecorder > :nth-child(3){
 	color:green;
 }
+#fake_cursor {
+	position : absolute;
+	z-index : 999;
+	overflow : visible;
+}
